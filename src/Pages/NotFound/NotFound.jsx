@@ -1,7 +1,8 @@
-import './NotFoundPage.css';
+import './NotFound.css';
 
 const NotFoundPage = () => {
   return (
+    <main className="not-found-Holder">
     <div className="not-found-container">
       <div className="not-found-card">
         {/* SVG illustration */}
@@ -28,6 +29,7 @@ const NotFoundPage = () => {
       </div>
       <p className="footer-note">&copy; {new Date().getFullYear()} — All rights reserved.</p>
     </div>
+    </main>
   );
 };
 

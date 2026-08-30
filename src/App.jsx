@@ -1,6 +1,6 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Home from "./Pages/Landing/Home";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Route, Routes, useLocation } from "react-router-dom";
 import Login from "./Pages/Auth/login";
 import Register from "./Pages/Auth/Register";
 import Marketplace from "./Pages/Market/Marketplace";
@@ -10,9 +10,22 @@ import SellProduct from "./Pages/SellProducts/SellProducts";
 import Dashboard from "./Pages/Dashboard/Dashboard";
 import MyProducts from "./Pages/MyProduct/MyProducts";
 import NotFoundPage from "./Pages/NotFound/NotFound";
+
+  function ScrollToTop() {
+    const { pathname } = useLocation();
+
+    useEffect(() => {
+      window.scrollTo(0, 0);
+    }, [pathname]);
+
+    return null;
+  }
+
 const App = () => {
+
   return (
     <BrowserRouter>
+      <ScrollToTop />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/marketplace" element={<Marketplace />} />
