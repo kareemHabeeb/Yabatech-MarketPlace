@@ -1,0 +1,460 @@
+.marketplace-page {
+  width: 100%;
+  background-color: #f7f9f8;
+  color: #1f2933;
+}
+
+/* ================= HERO ================= */
+
+.marketplace-hero {
+  padding: 90px 8%;
+  background: linear-gradient(135deg, #006b3f, #008c52);
+
+  color: #ffffff;
+}
+
+.marketplace-hero-content {
+  max-width: 850px;
+  margin: auto;
+  text-align: center;
+}
+
+.marketplace-tag {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+
+  color: #d7f5e3;
+
+  margin-bottom: 18px;
+}
+
+.marketplace-hero h1 {
+  font-size: clamp(36px, 5vw, 60px);
+  margin-bottom: 18px;
+}
+
+.marketplace-hero-content > p:not(.marketplace-tag) {
+  font-size: 17px;
+  line-height: 1.7;
+
+  max-width: 650px;
+  margin: 0 auto 35px;
+
+  color: #e3f5eb;
+}
+
+/* ================= SEARCH ================= */
+
+.marketplace-search {
+  display: flex;
+
+  max-width: 700px;
+
+  margin: auto;
+
+  background-color: #ffffff;
+
+  padding: 6px;
+
+  border-radius: 10px;
+}
+
+.marketplace-search input {
+  flex: 1;
+
+  border: none;
+
+  outline: none;
+
+  padding: 15px 18px;
+
+  font-size: 15px;
+
+  border-radius: 8px;
+}
+
+.marketplace-search button {
+  padding: 0 30px;
+
+  border: none;
+
+  border-radius: 7px;
+
+  background-color: #f4b400;
+
+  color: #1f2933;
+
+  font-size: 15px;
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+/* ================= CONTENT ================= */
+
+.marketplace-content {
+  padding: 70px 8%;
+}
+
+.marketplace-filter-heading {
+  display: flex;
+
+  justify-content: space-between;
+
+  align-items: flex-end;
+
+  margin-bottom: 25px;
+}
+
+.marketplace-filter-heading h2 {
+  font-size: 34px;
+}
+
+.marketplace-filter-heading p {
+  color: #6b7280;
+}
+
+/* ================= CATEGORY FILTERS ================= */
+
+.category-filters {
+  display: flex;
+
+  gap: 12px;
+
+  flex-wrap: wrap;
+
+  margin-bottom: 40px;
+}
+
+.category-filter {
+  padding: 10px 20px;
+
+  border: 1px solid #e5e7eb;
+
+  background-color: #ffffff;
+
+  border-radius: 30px;
+
+  color: #1f2933;
+
+  cursor: pointer;
+
+  font-size: 14px;
+
+  transition: 0.3s ease;
+}
+
+.category-filter:hover {
+  border-color: #006b3f;
+
+  color: #006b3f;
+}
+
+.active-filter {
+  background-color: #006b3f;
+
+  border-color: #006b3f;
+
+  color: white;
+}
+
+/* ================= LAYOUT ================= */
+
+.marketplace-layout {
+  display: grid;
+
+  grid-template-columns: 230px 1fr;
+
+  gap: 35px;
+}
+
+/* ================= SIDEBAR ================= */
+
+.filter-sidebar {
+  background-color: white;
+
+  border: 1px solid #e5e7eb;
+
+  border-radius: 12px;
+
+  padding: 25px;
+
+  height: fit-content;
+}
+
+.filter-sidebar h3 {
+  font-size: 20px;
+
+  margin-bottom: 25px;
+}
+
+.filter-group {
+  margin-bottom: 22px;
+}
+
+.filter-group label {
+  display: block;
+
+  margin-bottom: 10px;
+
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.filter-group select {
+  width: 100%;
+
+  padding: 12px;
+
+  border: 1px solid #e5e7eb;
+
+  border-radius: 8px;
+
+  outline: none;
+
+  background-color: white;
+}
+
+.clear-filter-btn {
+  width: 100%;
+
+  padding: 11px;
+
+  border: 1px solid #006b3f;
+
+  border-radius: 8px;
+
+  background: transparent;
+
+  color: #006b3f;
+
+  cursor: pointer;
+
+  font-weight: 600;
+}
+
+/* ================= PRODUCT GRID ================= */
+
+.marketplace-product-grid {
+  display: grid;
+
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+
+  gap: 25px;
+}
+
+.marketplace-product-card {
+  background-color: white;
+
+  border-radius: 12px;
+
+  overflow: hidden;
+
+  border: 1px solid #e5e7eb;
+
+  transition: 0.3s ease;
+}
+
+.marketplace-product-card:hover {
+  transform: translateY(-5px);
+
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.08);
+}
+
+.marketplace-product-image {
+  height: 210px;
+
+  position: relative;
+
+  overflow: hidden;
+}
+
+.marketplace-product-image img {
+  width: 100%;
+  height: 100%;
+
+  object-fit: cover;
+
+  transition: 0.4s ease;
+}
+
+.marketplace-product-card:hover img {
+  transform: scale(1.05);
+}
+
+.marketplace-product-image span {
+  position: absolute;
+
+  top: 12px;
+  right: 12px;
+
+  background-color: white;
+
+  color: #006b3f;
+
+  padding: 6px 10px;
+
+  border-radius: 20px;
+
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.marketplace-product-info {
+  padding: 20px;
+}
+
+.marketplace-product-category {
+  font-size: 13px;
+
+  color: #6b7280;
+
+  margin-bottom: 8px;
+}
+
+.marketplace-product-info h3 {
+  font-size: 17px;
+
+  margin-bottom: 10px;
+}
+
+.marketplace-price {
+  font-size: 20px;
+
+  font-weight: 700;
+
+  color: #006b3f;
+
+  margin-bottom: 10px;
+}
+
+.marketplace-seller {
+  font-size: 13px;
+
+  color: #6b7280;
+
+  margin-bottom: 18px;
+}
+
+.marketplace-view-btn {
+  display: block;
+
+  width: 100%;
+
+  text-align: center;
+
+  padding: 11px;
+
+  border-radius: 8px;
+
+  background-color: #f0f8f4;
+
+  color: #006b3f;
+
+  text-decoration: none;
+
+  font-size: 14px;
+
+  font-weight: 600;
+
+  transition: 0.3s ease;
+}
+
+.marketplace-view-btn:hover {
+  background-color: #006b3f;
+
+  color: white;
+}
+
+/* ================= EMPTY STATE ================= */
+
+.no-products {
+  padding: 70px 20px;
+
+  text-align: center;
+
+  background-color: white;
+
+  border-radius: 12px;
+}
+
+.no-products h3 {
+  margin-bottom: 10px;
+}
+
+.no-products p {
+  color: #6b7280;
+}
+
+/* ================= RESPONSIVE ================= */
+
+@media (max-width: 900px) {
+  .marketplace-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .filter-sidebar {
+    display: flex;
+
+    align-items: flex-end;
+
+    gap: 15px;
+  }
+
+  .filter-sidebar h3 {
+    display: none;
+  }
+
+  .filter-group {
+    flex: 1;
+
+    margin-bottom: 0;
+  }
+
+  .clear-filter-btn {
+    width: auto;
+
+    padding: 12px 20px;
+  }
+}
+
+@media (max-width: 600px) {
+  .marketplace-hero {
+    padding: 70px 6%;
+  }
+
+  .marketplace-content {
+    padding: 60px 6%;
+  }
+
+  .marketplace-search {
+    flex-direction: column;
+
+    gap: 8px;
+
+    padding: 8px;
+  }
+
+  .marketplace-search button {
+    height: 48px;
+  }
+
+  .marketplace-filter-heading {
+    flex-direction: column;
+
+    align-items: flex-start;
+
+    gap: 8px;
+  }
+
+  .filter-sidebar {
+    flex-direction: column;
+
+    align-items: stretch;
+  }
+
+  .clear-filter-btn {
+    width: 100%;
+  }
+}

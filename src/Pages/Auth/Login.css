@@ -1,0 +1,318 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.auth-page {
+  min-height: 100vh;
+  background-color: #f8faf9;
+  font-family: "Inter", sans-serif;
+}
+
+.auth-container {
+  min-height: 100vh;
+  display: flex;
+}
+
+/* =========================
+   LEFT SIDE
+========================= */
+
+.auth-banner {
+  width: 45%;
+  min-height: 100vh;
+  padding: 45px 60px;
+
+  background: linear-gradient(
+    135deg,
+    #006b3f,
+    #008c52
+  );
+
+  color: #ffffff;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.auth-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.auth-brand h2 {
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.brand-icon {
+  width: 45px;
+  height: 45px;
+
+  border-radius: 10px;
+
+  background-color: #f4b400;
+
+  color: #006b3f;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-weight: 800;
+}
+
+.auth-banner-content {
+  max-width: 500px;
+}
+
+.yabatech-tag {
+  display: inline-block;
+
+  padding: 8px 14px;
+
+  border: 1px solid rgba(255, 255, 255, 0.4);
+
+  border-radius: 30px;
+
+  font-size: 12px;
+  letter-spacing: 1px;
+}
+
+.auth-banner-content h1 {
+  margin: 25px 0 20px;
+
+  font-size: 55px;
+  line-height: 1.1;
+
+  font-weight: 700;
+}
+
+.auth-banner-content p {
+  max-width: 450px;
+
+  font-size: 17px;
+  line-height: 1.7;
+
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.auth-footer-text {
+  font-size: 14px;
+
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* =========================
+   RIGHT SIDE
+========================= */
+
+.auth-form-section {
+  width: 55%;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  padding: 40px 20px;
+}
+
+.auth-form {
+  width: 100%;
+  max-width: 440px;
+}
+
+.back-home {
+  display: inline-block;
+
+  margin-bottom: 50px;
+
+  text-decoration: none;
+
+  color: #006b3f;
+
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.form-heading {
+  margin-bottom: 35px;
+}
+
+.form-heading h2 {
+  color: #1f2933;
+
+  font-size: 32px;
+
+  margin-bottom: 10px;
+}
+
+.form-heading p {
+  color: #6b7280;
+
+  font-size: 15px;
+}
+
+/* =========================
+   FORM
+========================= */
+
+.form-group {
+  margin-bottom: 22px;
+}
+
+.form-group label {
+  display: block;
+
+  margin-bottom: 8px;
+
+  color: #1f2933;
+
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.form-group input {
+  width: 100%;
+
+  padding: 14px 16px;
+
+  border: 1px solid #e5e7eb;
+
+  border-radius: 8px;
+
+  font-size: 15px;
+
+  outline: none;
+
+  transition: 0.3s;
+}
+
+.form-group input:focus {
+  border-color: #006b3f;
+
+  box-shadow: 0 0 0 3px rgba(0, 107, 63, 0.1);
+}
+
+.password-label {
+  display: flex;
+
+  justify-content: space-between;
+
+  align-items: center;
+}
+
+.password-label a {
+  text-decoration: none;
+
+  font-size: 13px;
+
+  color: #006b3f;
+}
+
+.auth-button {
+  width: 100%;
+
+  padding: 15px;
+
+  border: none;
+
+  border-radius: 8px;
+
+  background-color: #006b3f;
+
+  color: white;
+
+  font-size: 16px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition: 0.3s;
+}
+
+.auth-button:hover {
+  background-color: #008c52;
+}
+
+/* =========================
+   DIVIDER
+========================= */
+
+.auth-divider {
+  display: flex;
+
+  align-items: center;
+
+  gap: 15px;
+
+  margin: 30px 0;
+}
+
+.auth-divider::before,
+.auth-divider::after {
+  content: "";
+
+  flex: 1;
+
+  height: 1px;
+
+  background-color: #e5e7eb;
+}
+
+.auth-divider span {
+  color: #9ca3af;
+
+  font-size: 12px;
+}
+
+/* =========================
+   REGISTER LINK
+========================= */
+
+.auth-switch {
+  text-align: center;
+
+  color: #6b7280;
+
+  font-size: 14px;
+}
+
+.auth-switch a {
+  color: #006b3f;
+
+  font-weight: 600;
+
+  text-decoration: none;
+}
+
+/* =========================
+   MOBILE RESPONSIVENESS
+========================= */
+
+@media (max-width: 900px) {
+  .auth-banner {
+    display: none;
+  }
+
+  .auth-form-section {
+    width: 100%;
+  }
+}
+
+@media (max-width: 500px) {
+  .auth-form-section {
+    padding: 30px 20px;
+  }
+
+  .back-home {
+    margin-bottom: 35px;
+  }
+
+  .form-heading h2 {
+    font-size: 26px;
+  }
+}

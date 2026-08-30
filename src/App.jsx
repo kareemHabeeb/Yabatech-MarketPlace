@@ -1,0 +1,32 @@
+import React from "react";
+import Home from "./Pages/Landing/Home";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import Login from "./Pages/Auth/login";
+import Register from "./Pages/Auth/Register";
+import Marketplace from "./Pages/Market/Marketplace";
+import Categories from "./Pages/Categories/Categories";
+import Details from "./Pages/Details/Details";
+import SellProduct from "./Pages/SellProducts/SellProducts";
+import Dashboard from "./Pages/Dashboard/Dashboard";
+import MyProducts from "./Pages/MyProduct/MyProducts";
+const App = () => {
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/marketplace" element={<Marketplace />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/categories" element={<Categories />} />
+        <Route path="/product/:id" element={<Details />} />
+        <Route path="/sell" element={<SellProduct />} />
+        <Route path="/user/dashboard" element={<Dashboard />} />
+        <Route path="/my-products" element={<MyProducts />} />
+
+        <Route path="*" element={<h1>404 Not Found</h1>} />
+      </Routes>
+    </BrowserRouter>
+  );
+};
+
+export default App;
