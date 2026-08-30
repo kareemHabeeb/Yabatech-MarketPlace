@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import Home from "./Pages/Landing/Home";
 import { BrowserRouter, Route, Routes, useLocation } from "react-router-dom";
-import Login from "./Pages/Auth/login";
+import Login from "./Pages/Auth/Login"
 import Register from "./Pages/Auth/Register";
 import Marketplace from "./Pages/Market/Marketplace";
 import Categories from "./Pages/Categories/Categories";
