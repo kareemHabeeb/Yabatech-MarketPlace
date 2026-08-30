@@ -9,6 +9,7 @@ import Details from "./Pages/Details/Details";
 import SellProduct from "./Pages/SellProducts/SellProducts";
 import Dashboard from "./Pages/Dashboard/Dashboard";
 import MyProducts from "./Pages/MyProduct/MyProducts";
+import NotFoundPage from "./Pages/NotFound/NotFound";
 const App = () => {
   return (
     <BrowserRouter>
@@ -23,7 +24,7 @@ const App = () => {
         <Route path="/user/dashboard" element={<Dashboard />} />
         <Route path="/my-products" element={<MyProducts />} />
 
-        <Route path="*" element={<h1>404 Not Found</h1>} />
+        <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </BrowserRouter>
   );
