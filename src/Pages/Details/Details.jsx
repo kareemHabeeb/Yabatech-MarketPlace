@@ -1,76 +1,99 @@
-import React from "react";
-import { Link, useParams } from "react-router-dom";
+import React, { useState } from "react";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import Header from "../../Components/Header";
 import Footer from "../../Components/Footer";
 import "./Details.css";
 
-const ProductDetails = () => {
+const ManageProduct = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
 
-  // MOCK DATA
-  // Later this will come from your API
+  // Temporary mock data
+  // Later, this will come from your API
+
   const products = [
     {
       id: 1,
       name: "HP EliteBook Laptop",
-      price: 250000,
       category: "Electronics",
-      condition: "Used",
-      seller: "John D.",
-      department: "Computer Science",
-      location: "YABATECH Main Campus",
+      price: 250000,
+      condition: "Used - Like New",
+      status: "Active",
       description:
-        "A clean and well-maintained HP EliteBook laptop suitable for students, programming, assignments, research, and general use. The laptop is in good working condition.",
+        "A clean HP EliteBook laptop in excellent condition. It is suitable for programming, school work, assignments, and general use. The laptop is working perfectly and has been properly maintained.",
       image:
-        "https://images.unsplash.com/photo-1496181133206-80ce9b88a853",
+        "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?auto=format&fit=crop&w=900&q=80",
+      datePosted: "August 20, 2026",
     },
+
     {
       id: 2,
-      name: "Wireless Bluetooth Headphones",
-      price: 12000,
-      category: "Electronics",
-      condition: "New",
-      seller: "Esther A.",
-      department: "Business Administration",
-      location: "YABATECH Main Campus",
+      name: "Engineering Mathematics Textbook",
+      category: "Books & Academic Materials",
+      price: 5000,
+      condition: "Used - Good Condition",
+      status: "Active",
       description:
-        "High-quality wireless Bluetooth headphones with clear sound and comfortable ear cushions.",
+        "A well-maintained Engineering Mathematics textbook suitable for students. The book is clean and all pages are complete.",
       image:
-        "https://images.unsplash.com/photo-1505740420928-5e560c06d30e",
+        "https://images.unsplash.com/photo-1544947950-fa07a98d237f?auto=format&fit=crop&w=900&q=80",
+      datePosted: "August 18, 2026",
     },
+
     {
       id: 3,
-      name: "Engineering Mathematics Textbook",
-      price: 5000,
-      category: "Books",
-      condition: "Used",
-      seller: "Michael O.",
-      department: "Mechanical Engineering",
-      location: "YABATECH Main Campus",
+      name: "Wireless Headphones",
+      category: "Electronics",
+      price: 12000,
+      condition: "Used - Like New",
+      status: "Sold",
       description:
-        "A useful engineering mathematics textbook in good condition. Suitable for students who need additional academic materials.",
+        "Wireless Bluetooth headphones with good sound quality and long battery life. Everything is working properly.",
       image:
-        "https://images.unsplash.com/photo-1544947950-fa07a98d237f",
+        "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=900&q=80",
+      datePosted: "August 15, 2026",
+    },
+
+    {
+      id: 4,
+      name: "Vintage Denim Jacket",
+      category: "Fashion",
+      price: 15000,
+      condition: "Used - Good Condition",
+      status: "Active",
+      description:
+        "A stylish vintage denim jacket in good condition. Perfect for casual wear and suitable for students.",
+      image:
+        "https://images.unsplash.com/photo-1529139574466-a303027c1d8b?auto=format&fit=crop&w=900&q=80",
+      datePosted: "August 10, 2026",
     },
   ];
 
-  const product = products.find(
-    (item) => item.id === Number(id)
+  const foundProduct = products.find(
+    (product) => product.id === Number(id)
   );
 
+  const [product, setProduct] = useState(foundProduct);
+
   // PRODUCT NOT FOUND
+
   if (!product) {
     return (
       <>
-        <main className="product-not-found">
-          <h2>Product Not Found</h2>
+        <Header />
 
-          <p>
-            The product you are looking for is not available.
-          </p>
+        <main className="manage-not-found">
+          <div>
+            <h1>Product Not Found</h1>
 
-          <Link to="/marketplace">
-            Back to Marketplace
-          </Link>
+            <p>
+              This product does not exist or may have been removed.
+            </p>
+
+            <Link to="/my-products">
+              ← Back to My Products
+            </Link>
+          </div>
         </main>
 
         <Footer />
@@ -78,56 +101,103 @@ const ProductDetails = () => {
     );
   }
 
+  // MARK PRODUCT AS SOLD
+
+  const handleMarkSold = () => {
+    const confirmSold = window.confirm(
+      "Are you sure you want to mark this product as sold?"
+    );
+
+    if (confirmSold) {
+      setProduct({
+        ...product,
+        status: "Sold",
+      });
+    }
+  };
+
+  // DELETE PRODUCT
+
+  const handleDelete = () => {
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this product?"
+    );
+
+    if (confirmDelete) {
+      // Later:
+      // DELETE /api/products/:id
+
+      alert("Product deleted successfully.");
+
+      navigate("/my-products");
+    }
+  };
+
   return (
     <>
-      <main className="product-details-page">
+      <Header />
 
-        {/* BREADCRUMB */}
+      <main className="manage-product-page">
 
-        <section className="breadcrumb-section">
+        {/* BACK LINK */}
 
-          <Link to="/">
-            Home
+        <section className="manage-breadcrumb">
+
+          <Link to="/dashboard">
+            Dashboard
           </Link>
 
           <span>/</span>
 
-          <Link to="/marketplace">
-            Marketplace
+          <Link to="/my-products">
+            My Products
           </Link>
 
           <span>/</span>
 
-          <span>{product.category}</span>
+          <p>
+            Manage Product
+          </p>
 
         </section>
 
 
-        {/* PRODUCT DETAILS */}
+        {/* MAIN PRODUCT SECTION */}
 
-        <section className="product-details-container">
+        <section className="manage-product-container">
+
 
           {/* PRODUCT IMAGE */}
 
-          <div className="product-details-image">
+          <div className="manage-product-gallery">
 
-            <img
-              src={product.image}
-              alt={product.name}
-            />
+            <div className="manage-main-image">
 
-            <span className="product-condition">
-              {product.condition}
-            </span>
+              <img
+                src={product.image}
+                alt={product.name}
+              />
+
+              <span
+                className={
+                  product.status === "Active"
+                    ? "manage-status active"
+                    : "manage-status sold"
+                }
+              >
+                {product.status}
+              </span>
+
+            </div>
 
           </div>
 
 
           {/* PRODUCT INFORMATION */}
 
-          <div className="product-details-info">
+          <div className="manage-product-info">
 
-            <p className="details-category">
+            <p className="manage-category">
               {product.category}
             </p>
 
@@ -135,199 +205,131 @@ const ProductDetails = () => {
               {product.name}
             </h1>
 
-            <h2 className="details-price">
+            <h2>
               ₦{product.price.toLocaleString()}
             </h2>
-
-            <div className="details-divider"></div>
 
 
             {/* PRODUCT INFORMATION */}
 
-            <div className="details-meta">
+            <div className="manage-info-box">
 
-              <div className="meta-item">
-                <span className="meta-label">
+              <div className="manage-info-row">
+
+                <span>
                   Condition
                 </span>
 
-                <span className="meta-value">
+                <strong>
                   {product.condition}
-                </span>
+                </strong>
+
               </div>
 
-              <div className="meta-item">
-                <span className="meta-label">
-                  Category
+
+              <div className="manage-info-row">
+
+                <span>
+                  Status
                 </span>
 
-                <span className="meta-value">
-                  {product.category}
-                </span>
+                <strong
+                  className={
+                    product.status === "Active"
+                      ? "active-text"
+                      : "sold-text"
+                  }
+                >
+                  {product.status}
+                </strong>
+
               </div>
 
-              <div className="meta-item">
-                <span className="meta-label">
-                  Location
+
+              <div className="manage-info-row">
+
+                <span>
+                  Date Posted
                 </span>
 
-                <span className="meta-value">
-                  {product.location}
-                </span>
-              </div>
+                <strong>
+                  {product.datePosted}
+                </strong>
 
-            </div>
-
-
-            {/* CONTACT BUTTON */}
-
-            <div className="product-action">
-
-              <button className="contact-seller-btn">
-                Contact Seller
-              </button>
-
-              <button className="save-product-btn">
-                ♡ Save Product
-              </button>
-
-            </div>
-
-          </div>
-
-        </section>
-
-
-        {/* DESCRIPTION AND SELLER */}
-
-        <section className="product-extra-info">
-
-          {/* DESCRIPTION */}
-
-          <div className="product-description">
-
-            <h2>Product Description</h2>
-
-            <p>
-              {product.description}
-            </p>
-
-          </div>
-
-
-          {/* SELLER */}
-
-          <div className="seller-card">
-
-            <p className="seller-title">
-              SOLD BY
-            </p>
-
-            <div className="seller-profile">
-
-              <div className="seller-avatar">
-                {product.seller.charAt(0)}
-              </div>
-
-              <div>
-                <h3>
-                  {product.seller}
-                </h3>
-
-                <p>
-                  {product.department}
-                </p>
               </div>
 
             </div>
 
-            <p className="verified-seller">
-              ✓ Verified Student
-            </p>
 
-            <button className="seller-contact-btn">
-              Contact Seller
-            </button>
+            {/* DESCRIPTION */}
 
-          </div>
+            <div className="manage-description">
 
-        </section>
+              <h3>
+                Product Description
+              </h3>
 
-
-        {/* RELATED PRODUCTS */}
-
-        <section className="related-products-section">
-
-          <div className="related-heading">
-
-            <div>
-              <p className="details-section-tag">
-                YOU MAY ALSO LIKE
+              <p>
+                {product.description}
               </p>
 
-              <h2>
-                Related Products
-              </h2>
             </div>
 
-            <Link to="/marketplace">
-              View Marketplace →
-            </Link>
 
-          </div>
+            {/* MANAGEMENT ACTIONS */}
+
+            <div className="manage-actions">
+
+              <Link
+                to={`/edit-product/${product.id}`}
+                className="manage-edit-btn"
+              >
+                Edit Product
+              </Link>
 
 
-          <div className="related-products-grid">
+              {product.status === "Active" && (
 
-            {products
-              .filter(
-                (item) =>
-                  item.category === product.category &&
-                  item.id !== product.id
-              )
-              .map((item) => (
-
-                <article
-                  className="related-product-card"
-                  key={item.id}
+                <button
+                  className="manage-sold-btn"
+                  onClick={handleMarkSold}
                 >
+                  Mark as Sold
+                </button>
 
-                  <div className="related-product-image">
+              )}
 
-                    <img
-                      src={item.image}
-                      alt={item.name}
-                    />
 
-                  </div>
+              <button
+                className="manage-delete-btn"
+                onClick={handleDelete}
+              >
+                Delete Product
+              </button>
 
-                  <div className="related-product-info">
+            </div>
 
-                    <p>
-                      {item.category}
-                    </p>
 
-                    <h3>
-                      {item.name}
-                    </h3>
-
-                    <h4>
-                      ₦{item.price.toLocaleString()}
-                    </h4>
-
-                    <Link
-                      to={`/products/${item.id}`}
-                    >
-                      View Product →
-                    </Link>
-
-                  </div>
-
-                </article>
-
-              ))}
+            <p className="manage-note">
+              You can update, mark as sold, or remove this product from your
+              listings.
+            </p>
 
           </div>
+
+        </section>
+
+
+        {/* BACK BUTTON */}
+
+        <section className="manage-back-section">
+
+          <Link
+            to="/my-products"
+            className="manage-back-btn"
+          >
+            ← Back to My Products
+          </Link>
 
         </section>
 
@@ -338,4 +340,4 @@ const ProductDetails = () => {
   );
 };
 
-export default ProductDetails;
+export default ManageProduct;

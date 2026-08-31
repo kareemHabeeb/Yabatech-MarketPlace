@@ -208,7 +208,7 @@ const Dashboard = () => {
                     </h4>
 
                     <Link
-                      to={`/products/${product.id}`}
+                      to={`/View-products/${product.id}`}
                     >
                       View Product →
                     </Link>
