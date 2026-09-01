@@ -1,0 +1,331 @@
+.edit-product-page {
+  width: 100%;
+  min-height: 100vh;
+  background-color: #f7f9f8;
+  color: #1f2933;
+}
+
+
+/* ================= BREADCRUMB ================= */
+
+.edit-breadcrumb {
+  max-width: 1200px;
+  margin: auto;
+
+  padding: 35px 8% 20px;
+
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  font-size: 14px;
+
+  flex-wrap: wrap;
+}
+
+.edit-breadcrumb a {
+  color: #006b3f;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.edit-breadcrumb span {
+  color: #9ca3af;
+}
+
+.edit-breadcrumb p {
+  color: #6b7280;
+}
+
+
+/* ================= HEADING ================= */
+
+.edit-heading {
+  max-width: 1200px;
+  margin: auto;
+
+  padding: 10px 8% 30px;
+}
+
+.edit-heading h1 {
+  font-size: 36px;
+  margin-bottom: 10px;
+}
+
+.edit-heading p {
+  color: #6b7280;
+}
+
+
+/* ================= FORM CONTAINER ================= */
+
+.edit-form-container {
+  max-width: 1200px;
+  margin: auto;
+
+  padding: 0 8% 80px;
+}
+
+
+/* ================= FORM ================= */
+
+.edit-product-form {
+  background-color: white;
+
+  border: 1px solid #e5e7eb;
+
+  border-radius: 14px;
+
+  padding: 35px;
+
+  display: grid;
+
+  grid-template-columns: 1fr 1fr;
+
+  gap: 25px;
+}
+
+
+/* ================= FORM GROUP ================= */
+
+.edit-form-group {
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 8px;
+}
+
+.edit-full-width {
+  grid-column: span 2;
+}
+
+.edit-form-group label {
+  font-size: 14px;
+
+  font-weight: 600;
+}
+
+
+/* ================= INPUT ================= */
+
+.edit-form-group input,
+.edit-form-group select,
+.edit-form-group textarea {
+  width: 100%;
+
+  padding: 14px;
+
+  border: 1px solid #d1d5db;
+
+  border-radius: 8px;
+
+  outline: none;
+
+  font-size: 15px;
+
+  font-family: inherit;
+
+  transition: 0.3s ease;
+
+  box-sizing: border-box;
+}
+
+.edit-form-group textarea {
+  resize: vertical;
+}
+
+.edit-form-group input:focus,
+.edit-form-group select:focus,
+.edit-form-group textarea:focus {
+  border-color: #006b3f;
+
+  box-shadow: 0 0 0 3px rgba(0, 107, 63, 0.1);
+}
+
+
+/* ================= IMAGE PREVIEW ================= */
+
+.edit-image-preview {
+  width: 100%;
+
+  height: 280px;
+
+  margin-top: 10px;
+
+  border-radius: 10px;
+
+  overflow: hidden;
+
+  background-color: #f3f4f6;
+}
+
+.edit-image-preview img {
+  width: 100%;
+  height: 100%;
+
+  object-fit: cover;
+}
+
+
+/* ================= ACTIONS ================= */
+
+.edit-form-actions {
+  grid-column: span 2;
+
+  display: flex;
+
+  justify-content: flex-end;
+
+  align-items: center;
+
+  gap: 15px;
+
+  margin-top: 10px;
+}
+
+.cancel-edit-btn,
+.update-product-btn {
+  padding: 14px 24px;
+
+  border-radius: 8px;
+
+  font-size: 14px;
+
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition: 0.3s ease;
+}
+
+
+/* CANCEL */
+
+.cancel-edit-btn {
+  border: 1px solid #d1d5db;
+
+  color: #374151;
+
+  text-decoration: none;
+
+  background-color: white;
+}
+
+.cancel-edit-btn:hover {
+  background-color: #f3f4f6;
+}
+
+
+/* UPDATE */
+
+.update-product-btn {
+  border: none;
+
+  background-color: #006b3f;
+
+  color: white;
+}
+
+.update-product-btn:hover {
+  background-color: #008c52;
+
+  transform: translateY(-2px);
+}
+
+
+/* ================= NOT FOUND ================= */
+
+.edit-not-found {
+  min-height: 60vh;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  text-align: center;
+
+  padding: 50px 8%;
+}
+
+.edit-not-found h1 {
+  margin-bottom: 15px;
+}
+
+.edit-not-found p {
+  color: #6b7280;
+
+  margin-bottom: 25px;
+}
+
+.edit-not-found a {
+  display: inline-block;
+
+  padding: 13px 20px;
+
+  border-radius: 8px;
+
+  background-color: #006b3f;
+
+  color: white;
+
+  text-decoration: none;
+
+  font-weight: 600;
+}
+
+
+/* ================= RESPONSIVE ================= */
+
+@media (max-width: 700px) {
+
+  .edit-product-form {
+    grid-template-columns: 1fr;
+
+    padding: 25px;
+  }
+
+  .edit-full-width {
+    grid-column: span 1;
+  }
+
+  .edit-form-actions {
+    grid-column: span 1;
+
+    flex-direction: column-reverse;
+
+    align-items: stretch;
+  }
+
+  .cancel-edit-btn,
+  .update-product-btn {
+    text-align: center;
+
+    width: 100%;
+
+    box-sizing: border-box;
+  }
+
+}
+
+
+@media (max-width: 600px) {
+
+  .edit-breadcrumb,
+  .edit-heading,
+  .edit-form-container {
+    padding-left: 6%;
+    padding-right: 6%;
+  }
+
+  .edit-heading h1 {
+    font-size: 30px;
+  }
+
+  .edit-image-preview {
+    height: 220px;
+  }
+
+}

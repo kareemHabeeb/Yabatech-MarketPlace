@@ -12,6 +12,9 @@ import MyProducts from "./Pages/MyProduct/MyProducts";
 import NotFoundPage from "./Pages/NotFound/NotFound";
 import ViewProducts from "./Pages/ViewProducts/ViewProducts";
 import ManageProduct from "./Pages/Details/Details";
+import EditProduct from "./Pages/EditPage/EditProduct";
+import Profile from "./Pages/Profile/Profile";
+import ForgotPassword from "./Pages/Auth/ForgetPassword";
 
   function ScrollToTop() {
     const { pathname } = useLocation();
@@ -39,6 +42,9 @@ const App = () => {
         <Route path="/user/dashboard" element={<Dashboard />} />
         <Route path="/my-products" element={<MyProducts />} />
         <Route path="/View-products/:id" element={<ManageProduct />} />
+        <Route path="/edit-product/:id" element={<EditProduct />} />
+        <Route path="/profile" element={<Profile />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
 
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
