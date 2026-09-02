@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import Header from "../../Components/Header"
 import Footer from "../../Components/Footer"
 import "./MyProducts.css";
+import DashboardHeader from "../../Components/DashboardHeader";
 
 const MyProducts = () => {
   // Temporary mock data
@@ -69,7 +69,7 @@ const MyProducts = () => {
 
   return (
     <>
-      <Header />
+      <DashboardHeader />
 
       <main className="my-products-page">
 
@@ -242,7 +242,7 @@ const MyProducts = () => {
                     <div className="product-actions">
 
                       <Link
-                        to={`/products/${product.id}`}
+                        to={`/View-products/${product.id}`}
                         className="view-btn"
                       >
                         View

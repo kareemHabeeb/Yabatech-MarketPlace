@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Footer from "../../Components/Footer"
 import "./SellProducts.css";
-import Header from "../../Components/Header";
+import DashboardHeader from "../../Components/DashboardHeader";
 
 const SellProduct = () => {
   const navigate = useNavigate();
@@ -72,7 +72,7 @@ const SellProduct = () => {
 
   return (
     <>
-    <Header />
+    <DashboardHeader />
       <main className="sell-product-page">
 
         {/* PAGE HERO */}

@@ -173,14 +173,14 @@ const Register = () => {
 
               </div>
 
-
+  <Link to="/verifyOTP">
               <button
                 type="submit"
                 className="auth-button"
               >
                 Create Account
               </button>
-
+</Link>
             </form>
 
 

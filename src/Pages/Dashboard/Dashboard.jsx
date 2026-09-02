@@ -1,8 +1,8 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import Header from "../../Components/Header";
 import Footer from "../../Components/Footer";
 import "./Dashboard.css";
+import DashboardHeader from "../../Components/DashboardHeader";
 
 const Dashboard = () => {
   // Temporary mock data
@@ -44,7 +44,7 @@ const Dashboard = () => {
 
   return (
     <>
-      <Header />
+      <DashboardHeader />
 
       <main className="dashboard-page">
 

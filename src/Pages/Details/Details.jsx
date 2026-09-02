@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import Header from "../../Components/Header";
 import Footer from "../../Components/Footer";
 import "./Details.css";
+import DashboardHeader from "../../Components/DashboardHeader";
 
 const ManageProduct = () => {
   const { id } = useParams();
@@ -135,7 +135,7 @@ const ManageProduct = () => {
 
   return (
     <>
-      <Header />
+      <DashboardHeader />
 
       <main className="manage-product-page">
 

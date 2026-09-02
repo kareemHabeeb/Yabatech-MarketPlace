@@ -1,8 +1,8 @@
 import React from "react";
 import { Link, useParams } from "react-router-dom";
-import Header from "../../Components/Header";
 import Footer from "../../Components/Footer";
 import "./ViewProducts.css";
+import Header from "../../Components/Header";
 
 const ViewProducts = () => {
   const { id } = useParams();

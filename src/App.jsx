@@ -15,6 +15,8 @@ import ManageProduct from "./Pages/Details/Details";
 import EditProduct from "./Pages/EditPage/EditProduct";
 import Profile from "./Pages/Profile/Profile";
 import ForgotPassword from "./Pages/Auth/ForgetPassword";
+import VerifyOTP from "./Pages/Auth/VerifyOtp";
+import ResetPassword from "./Pages/Auth/ResetPassword";
 
   function ScrollToTop() {
     const { pathname } = useLocation();
@@ -45,6 +47,8 @@ const App = () => {
         <Route path="/edit-product/:id" element={<EditProduct />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/verifyOTP" element={<VerifyOTP />} />
+        <Route path="/resetPassword" element={<ResetPassword />} />
 
         <Route path="*" element={<NotFoundPage />} />
       </Routes>

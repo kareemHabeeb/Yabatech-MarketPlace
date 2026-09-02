@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import Header from "../../Components/Header";
 import Footer from "../../Components/Footer";
 import "./EditProduct.css";
+import DashboardHeader from "../../Components/DashboardHeader";
 
 const EditProduct = () => {
   const { id } = useParams();
@@ -114,7 +114,7 @@ const EditProduct = () => {
   if (!product) {
     return (
       <>
-        <Header />
+        <DashboardHeader />
 
         <main className="edit-not-found">
           <div>
@@ -138,7 +138,7 @@ const EditProduct = () => {
 
   return (
     <>
-      <Header />
+      <DashboardHeader />
 
       <main className="edit-product-page">
 

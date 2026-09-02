@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import Header from "../../Components/Header";
 import Footer from "../../Components/Footer";
 import "./Profile.css";
+import DashboardHeader from "../../Components/DashboardHeader";
 
 const Profile = () => {
   // Temporary user data
@@ -49,7 +49,7 @@ const Profile = () => {
 
   return (
     <>
-      <Header />
+      <DashboardHeader />
 
       <main className="profile-page">
         {/* BREADCRUMB */}
