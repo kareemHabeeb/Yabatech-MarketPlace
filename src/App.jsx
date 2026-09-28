@@ -1,7 +1,9 @@
 import React, { useEffect } from "react";
 import Home from "./Pages/Landing/Home";
 import { BrowserRouter, Route, Routes, useLocation } from "react-router-dom";
-import Login from "./Pages/Auth/Login"
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import Login from "./Pages/Auth/Login";
 import Register from "./Pages/Auth/Register";
 import Marketplace from "./Pages/Market/Marketplace";
 import Categories from "./Pages/Categories/Categories";
@@ -18,18 +20,17 @@ import ForgotPassword from "./Pages/Auth/ForgetPassword";
 import VerifyOTP from "./Pages/Auth/VerifyOtp";
 import ResetPassword from "./Pages/Auth/ResetPassword";
 
-  function ScrollToTop() {
-    const { pathname } = useLocation();
+function ScrollToTop() {
+  const { pathname } = useLocation();
 
-    useEffect(() => {
-      window.scrollTo(0, 0);
-    }, [pathname]);
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
 
-    return null;
-  }
+  return null;
+}
 
 const App = () => {
-
   return (
     <BrowserRouter>
       <ScrollToTop />
@@ -52,6 +53,8 @@ const App = () => {
 
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
+
+      <ToastContainer position="top-right" autoClose={4000} />
     </BrowserRouter>
   );
 };

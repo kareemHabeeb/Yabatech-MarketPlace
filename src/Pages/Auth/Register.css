@@ -29,11 +29,7 @@
 
   padding: 45px 60px;
 
-  background: linear-gradient(
-    135deg,
-    #006b3f,
-    #008c52
-  );
+  background: linear-gradient(135deg, #006b3f, #008c52);
 
   color: white;
 
@@ -223,11 +219,47 @@
 }
 
 /* =========================
+   PASSWORD TOGGLE
+========================= */
+
+.password-input-wrap {
+  position: relative;
+}
+
+.password-input-wrap input {
+  padding-right: 44px;
+}
+
+.password-toggle-btn {
+  position: absolute;
+  top: 50%;
+  right: 12px;
+  transform: translateY(-50%);
+  border: none;
+  background: transparent;
+  color: #6b7280;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  font-size: 18px;
+}
+
+.password-toggle-btn:hover:not(:disabled) {
+  color: #006b3f;
+}
+
+.password-toggle-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* =========================
    MOBILE
 ========================= */
 
 @media (max-width: 1000px) {
-
   .register-banner {
     display: none;
   }
@@ -235,11 +267,9 @@
   .register-form-section {
     width: 100%;
   }
-
 }
 
 @media (max-width: 600px) {
-
   .register-form-section {
     padding: 35px 20px;
   }
@@ -252,5 +282,4 @@
   .form-heading h2 {
     font-size: 26px;
   }
-
 }

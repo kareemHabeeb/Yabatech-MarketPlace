@@ -1,25 +1,60 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { toast } from "react-toastify";
 import Footer from "../../Components/Footer";
 import "./Profile.css";
 import DashboardHeader from "../../Components/DashboardHeader";
+import { apiClient } from "../../config/AxiosInstance";
+
+const EMPTY_USER = {
+  firstName: "",
+  lastName: "",
+  email: "",
+  matricNumber: "",
+  department: "",
+  level: "",
+  phoneNumber: "",
+};
 
 const Profile = () => {
-  // Temporary user data
-  // Later this will come from your API
-
   const [isEditing, setIsEditing] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
 
-  const [userData, setUserData] = useState({
-    fullName: "John Doe",
-    email: "johndoe@student.yabatech.edu.ng",
-    matricNumber: "ND/CSC/2023/001",
-    department: "Computer Science",
-    school: "School of Technology",
-    phone: "08012345678",
-  });
+  const [userData, setUserData] = useState(EMPTY_USER);
+  const [formData, setFormData] = useState(EMPTY_USER);
 
-  const [formData, setFormData] = useState(userData);
+  useEffect(() => {
+    fetchProfile();
+  }, []);
+
+  const fetchProfile = async () => {
+    setLoading(true);
+    try {
+      const res = await apiClient.get("/user/profile");
+      const data = res.data?.data ?? res.data ?? {};
+
+      const mapped = {
+        firstName: data.firstName ?? "",
+        lastName: data.lastName ?? "",
+        email: data.email ?? "",
+        matricNumber: data.matricNumber ?? "",
+        department: data.department ?? "",
+        level: data.level ?? "",
+        phoneNumber: data.phoneNumber ?? "",
+      };
+
+      setUserData(mapped);
+      setFormData(mapped);
+    } catch (err) {
+      console.error("Failed to load profile:", err);
+      toast.error(
+        err.response?.data?.message || "Could not load your profile.",
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -30,22 +65,47 @@ const Profile = () => {
     });
   };
 
-  const handleSave = (e) => {
+  const handleSave = async (e) => {
     e.preventDefault();
 
-    // Later, send updated data to API
-    // PUT /api/users/profile
+    try {
+      setSaving(true);
 
-    setUserData(formData);
-    setIsEditing(false);
+      const response = await apiClient.put("/user/update-profile", {
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        matricNumber: formData.matricNumber,
+        department: formData.department,
+        level: formData.level,
+        email: formData.email,
+        phoneNumber: formData.phoneNumber,
+      });
 
-    alert("Profile updated successfully!");
+      console.log("Profile update response:", response.data);
+
+      const updated = response.data?.data ?? formData;
+      setUserData((prev) => ({ ...prev, ...updated }));
+      setFormData((prev) => ({ ...prev, ...updated }));
+      setIsEditing(false);
+
+      toast.success(response.data?.message || "Profile updated successfully!");
+    } catch (err) {
+      console.error("Profile update error:", err);
+      toast.error(
+        err.response?.data?.message ||
+          "Unable to update your profile. Please try again.",
+      );
+    } finally {
+      setSaving(false);
+    }
   };
 
   const handleCancel = () => {
     setFormData(userData);
     setIsEditing(false);
   };
+
+  const fullName = `${userData.firstName} ${userData.lastName}`.trim();
 
   return (
     <>
@@ -66,11 +126,11 @@ const Profile = () => {
 
         <section className="profile-header">
           <div className="profile-avatar">
-            {userData.fullName.charAt(0)}
+            {fullName ? fullName.charAt(0) : "?"}
           </div>
 
           <div className="profile-header-info">
-            <h1>{userData.fullName}</h1>
+            <h1>{loading ? "Loading..." : fullName || "Your Profile"}</h1>
 
             <p>{userData.department}</p>
 
@@ -81,6 +141,7 @@ const Profile = () => {
             <button
               className="edit-profile-btn"
               onClick={() => setIsEditing(true)}
+              disabled={loading}
             >
               Edit Profile
             </button>
@@ -95,28 +156,36 @@ const Profile = () => {
               <div>
                 <h2>Personal Information</h2>
 
-                <p>
-                  Manage your personal and academic information.
-                </p>
+                <p>Manage your personal and academic information.</p>
               </div>
             </div>
 
             <div className="profile-form">
-              {/* FULL NAME */}
+              {/* FIRST NAME */}
 
               <div className="profile-form-group">
-                <label>Full Name</label>
+                <label>First Name</label>
 
                 <input
                   type="text"
-                  name="fullName"
-                  value={
-                    isEditing
-                      ? formData.fullName
-                      : userData.fullName
-                  }
+                  name="firstName"
+                  value={isEditing ? formData.firstName : userData.firstName}
                   onChange={handleChange}
-                  disabled={!isEditing}
+                  disabled={!isEditing || loading || saving}
+                />
+              </div>
+
+              {/* LAST NAME */}
+
+              <div className="profile-form-group">
+                <label>Last Name</label>
+
+                <input
+                  type="text"
+                  name="lastName"
+                  value={isEditing ? formData.lastName : userData.lastName}
+                  onChange={handleChange}
+                  disabled={!isEditing || loading || saving}
                 />
               </div>
 
@@ -128,13 +197,9 @@ const Profile = () => {
                 <input
                   type="email"
                   name="email"
-                  value={
-                    isEditing
-                      ? formData.email
-                      : userData.email
-                  }
+                  value={isEditing ? formData.email : userData.email}
                   onChange={handleChange}
-                  disabled={!isEditing}
+                  disabled={!isEditing || loading || saving}
                 />
               </div>
 
@@ -147,12 +212,10 @@ const Profile = () => {
                   type="text"
                   name="matricNumber"
                   value={
-                    isEditing
-                      ? formData.matricNumber
-                      : userData.matricNumber
+                    isEditing ? formData.matricNumber : userData.matricNumber
                   }
                   onChange={handleChange}
-                  disabled={!isEditing}
+                  disabled={!isEditing || loading || saving}
                 />
               </div>
 
@@ -164,31 +227,23 @@ const Profile = () => {
                 <input
                   type="text"
                   name="department"
-                  value={
-                    isEditing
-                      ? formData.department
-                      : userData.department
-                  }
+                  value={isEditing ? formData.department : userData.department}
                   onChange={handleChange}
-                  disabled={!isEditing}
+                  disabled={!isEditing || loading || saving}
                 />
               </div>
 
-              {/* SCHOOL */}
+              {/* LEVEL (name attribute fixed to match state key) */}
 
               <div className="profile-form-group">
-                <label>School</label>
+                <label>Level</label>
 
                 <input
                   type="text"
-                  name="school"
-                  value={
-                    isEditing
-                      ? formData.school
-                      : userData.school
-                  }
+                  name="level"
+                  value={isEditing ? formData.level : userData.level}
                   onChange={handleChange}
-                  disabled={!isEditing}
+                  disabled={!isEditing || loading || saving}
                 />
               </div>
 
@@ -199,14 +254,12 @@ const Profile = () => {
 
                 <input
                   type="tel"
-                  name="phone"
+                  name="phoneNumber"
                   value={
-                    isEditing
-                      ? formData.phone
-                      : userData.phone
+                    isEditing ? formData.phoneNumber : userData.phoneNumber
                   }
                   onChange={handleChange}
-                  disabled={!isEditing}
+                  disabled={!isEditing || loading || saving}
                 />
               </div>
             </div>
@@ -219,6 +272,7 @@ const Profile = () => {
                   type="button"
                   className="cancel-profile-btn"
                   onClick={handleCancel}
+                  disabled={saving}
                 >
                   Cancel
                 </button>
@@ -226,8 +280,9 @@ const Profile = () => {
                 <button
                   type="submit"
                   className="save-profile-btn"
+                  disabled={saving}
                 >
-                  Save Changes
+                  {saving ? "Saving..." : "Save Changes"}
                 </button>
               </div>
             )}
@@ -247,23 +302,18 @@ const Profile = () => {
             <div className="account-info">
               <span>Account Status</span>
 
-              <strong className="verified-account">
-                Verified
-              </strong>
+              <strong className="verified-account">Verified</strong>
             </div>
 
             <div className="account-info">
               <span>Marketplace Access</span>
 
-              <strong className="access-active">
-                Active
-              </strong>
+              <strong className="access-active">Active</strong>
             </div>
 
             <div className="account-note">
               <p>
-                Your account is verified as a member of the campus
-                community.
+                Your account is verified as a member of the campus community.
               </p>
             </div>
           </aside>

@@ -1,5 +1,7 @@
 import React, { useState, useRef } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import { apiClient } from "../../config/AxiosInstance";
 import "./VerifyOtp.css";
 
 const VerifyOTP = () => {
@@ -8,20 +10,34 @@ const VerifyOTP = () => {
 
   const inputRefs = useRef([]);
 
-  // This can be passed from Register or Forgot Password later
-  const email =
-    location.state?.email || "student@yabatech.edu.ng";
+  /*
+   * Email is passed from Register.jsx
+   */
+  const email = location.state?.email || "";
 
-  const verificationType =
-    location.state?.type || "registration";
+  /*
+   * This allows this component to also be reused
+   * later for password reset.
+   */
+  const verificationType = location.state?.type || "registration";
 
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
+
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [isResending, setIsResending] = useState(false);
+
+  /*
+   ========================================
+   HANDLE OTP INPUT
+   ========================================
+  */
 
   const handleChange = (index, value) => {
     // Only allow numbers
-    if (!/^\d*$/.test(value)) return;
+    if (!/^\d*$/.test(value)) {
+      return;
+    }
 
     const newOtp = [...otp];
 
@@ -36,15 +52,23 @@ const VerifyOTP = () => {
     }
   };
 
+  /*
+   ========================================
+   HANDLE BACKSPACE
+   ========================================
+  */
+
   const handleKeyDown = (index, e) => {
-    if (
-      e.key === "Backspace" &&
-      !otp[index] &&
-      index > 0
-    ) {
+    if (e.key === "Backspace" && !otp[index] && index > 0) {
       inputRefs.current[index - 1]?.focus();
     }
   };
+
+  /*
+   ========================================
+   HANDLE OTP PASTE
+   ========================================
+  */
 
   const handlePaste = (e) => {
     e.preventDefault();
@@ -54,168 +78,205 @@ const VerifyOTP = () => {
       .replace(/\D/g, "")
       .slice(0, 6);
 
-    if (!pastedData) return;
+    if (!pastedData) {
+      return;
+    }
 
-    const newOtp = [...otp];
+    const newOtp = ["", "", "", "", "", ""];
 
     pastedData.split("").forEach((digit, index) => {
       newOtp[index] = digit;
     });
 
     setOtp(newOtp);
+    setError("");
 
-    const nextIndex = Math.min(
-      pastedData.length,
-      otp.length - 1
-    );
+    const nextIndex = Math.min(pastedData.length, otp.length - 1);
 
     inputRefs.current[nextIndex]?.focus();
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     const enteredOtp = otp.join("");
 
+    // Check OTP length
     if (enteredOtp.length !== 6) {
       setError("Please enter the complete 6-digit OTP.");
+
       return;
     }
 
-    setIsLoading(true);
+    // Email is required
+    if (!email) {
+      setError("Email address is missing. Please return to registration.");
 
-    // Temporary frontend verification
-    // Later:
-    // POST /api/auth/verify-otp
+      return;
+    }
 
-    setTimeout(() => {
-      setIsLoading(false);
+    try {
+      setIsLoading(true);
+      setError("");
 
-      if (enteredOtp !== "123456") {
-        setError("Invalid OTP. Please try again.");
-        return;
-      }
+      const response = await apiClient.post("user/verify-email", {
+        email: email,
+        otp: enteredOtp,
+      });
 
+      console.log("OTP verification response:", response.data);
+
+      toast.success(response.data?.message || "Email verified successfully!");
+
+      /*
+       * Password reset flow
+       */
       if (verificationType === "password-reset") {
-        navigate("/reset-password", {
+        navigate("/resetPassword", {
           state: {
             email: email,
           },
         });
-      } else {
-        navigate("/login");
+
+        return;
       }
-    }, 800);
+
+      /*
+       * Registration flow
+       */
+      navigate("/login");
+    } catch (error) {
+      console.error("OTP verification error:", error);
+
+      const errorMessage =
+        error.response?.data?.message ||
+        "Invalid or expired OTP. Please try again.";
+
+      setError(errorMessage);
+
+      toast.error(errorMessage);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const handleResend = () => {
-    setOtp(["", "", "", "", "", ""]);
-    setError("");
+  /*
+   ========================================
+   RESEND OTP
+   ========================================
+  */
 
-    // Later:
-    // POST /api/auth/resend-otp
+  const handleResend = async () => {
+    if (!email) {
+      toast.error("Email address is missing. Please return to registration.");
 
-    alert("A new OTP has been sent.");
+      return;
+    }
+
+    try {
+      setIsResending(true);
+      setError("");
+
+      const response = await apiClient.post("/resend-otp", {
+        email: email,
+      });
+
+      console.log("Resend OTP response:", response.data);
+
+      // Clear current OTP
+      setOtp(["", "", "", "", "", ""]);
+
+      // Focus first OTP input
+      inputRefs.current[0]?.focus();
+
+      toast.success(
+        response.data?.message || "A new OTP has been sent to your email.",
+      );
+    } catch (error) {
+      console.error("Resend OTP error:", error);
+
+      const errorMessage =
+        error.response?.data?.message ||
+        "Unable to resend OTP. Please try again.";
+
+      setError(errorMessage);
+
+      toast.error(errorMessage);
+    } finally {
+      setIsResending(false);
+    }
   };
 
   return (
     <>
-      {/* <Header /> */}
-
       <main className="verify-otp-page">
         <section className="verify-otp-card">
-
-          <Link
-            to="/login"
-            className="verify-back-link"
-          >
-            ← Back to Login
+          {/* BACK LINK */}
+          <Link to="/register" className="verify-back-link">
+            ← Back to Register
           </Link>
 
-          <div className="verify-icon">
-            ✉
-          </div>
+          {/* ICON */}
+          <div className="verify-icon">✉</div>
 
+          {/* HEADING */}
           <div className="verify-heading">
             <h1>Verify Your Account</h1>
 
-            <p>
-              We've sent a 6-digit verification code to
-            </p>
+            <p>We've sent a 6-digit verification code to</p>
 
-            <strong>{email}</strong>
+            <strong>{email || "your email address"}</strong>
           </div>
 
+          {/* OTP FORM */}
           <form onSubmit={handleSubmit}>
-
-            <div
-              className="otp-input-container"
-              onPaste={handlePaste}
-            >
+            <div className="otp-input-container" onPaste={handlePaste}>
               {otp.map((digit, index) => (
                 <input
                   key={index}
-                  ref={(element) =>
-                    (inputRefs.current[index] = element)
-                  }
+                  ref={(element) => {
+                    inputRefs.current[index] = element;
+                  }}
                   type="text"
                   inputMode="numeric"
-                  maxLength="1"
+                  maxLength={1}
                   value={digit}
-                  onChange={(e) =>
-                    handleChange(index, e.target.value)
-                  }
-                  onKeyDown={(e) =>
-                    handleKeyDown(index, e)
-                  }
-                  className={
-                    error ? "otp-error" : ""
-                  }
+                  onChange={(e) => handleChange(index, e.target.value)}
+                  onKeyDown={(e) => handleKeyDown(index, e)}
+                  className={error ? "otp-error" : ""}
+                  disabled={isLoading}
+                  autoComplete="one-time-code"
                 />
               ))}
             </div>
 
-            {error && (
-              <p className="otp-error-message">
-                {error}
-              </p>
-            )}
+            {/* ERROR */}
+            {error && <p className="otp-error-message">{error}</p>}
 
+            {/* VERIFY BUTTON */}
             <button
               type="submit"
               className="verify-otp-btn"
-              disabled={isLoading}
+              disabled={isLoading || isResending}
             >
-              {isLoading
-                ? "Verifying..."
-                : "Verify OTP"}
+              {isLoading ? "Verifying..." : "Verify OTP"}
             </button>
-
           </form>
 
+          {/* RESEND */}
           <div className="resend-section">
-            <p>
-              Didn't receive the code?
-            </p>
+            <p>Didn't receive the code?</p>
 
             <button
               type="button"
               onClick={handleResend}
+              disabled={isResending || isLoading}
             >
-              Resend OTP
+              {isResending ? "Sending..." : "Resend OTP"}
             </button>
           </div>
-
-          {/* Temporary development information */}
-
-          <div className="dev-otp-note">
-            <strong>Development OTP:</strong> 123456
-          </div>
-
         </section>
       </main>
-
-      {/* <Footer /> */}
     </>
   );
 };

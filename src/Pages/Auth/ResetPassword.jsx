@@ -1,13 +1,14 @@
 import React, { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 import "./ResetPassword.css";
+import { apiClient } from "../../config/AxiosInstance";
 
 const ResetPassword = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const email =
-    location.state?.email || "student@yabatech.edu.ng";
+  const email = location.state?.email || "student@yabatech.edu.ng";
 
   const [formData, setFormData] = useState({
     password: "",
@@ -15,6 +16,7 @@ const ResetPassword = () => {
   });
 
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -27,32 +29,45 @@ const ResetPassword = () => {
     setError("");
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (formData.password.length < 8) {
-      setError(
-        "Password must be at least 8 characters long."
-      );
+      setError("Password must be at least 8 characters long.");
       return;
     }
 
-    if (
-      formData.password !==
-      formData.confirmPassword
-    ) {
+    if (formData.password !== formData.confirmPassword) {
       setError("Passwords do not match.");
       return;
     }
 
-    // Later:
-    // POST /api/auth/reset-password
+    try {
+      setLoading(true);
 
-    console.log("Password reset for:", email);
+      const response = await apiClient.post("/user/reset-password", {
+        email,
+        newPassword: formData.password,
+        confirmPassword: formData.confirmPassword,
+      });
 
-    alert("Password reset successfully!");
+      console.log("Password reset response:", response.data);
 
-    navigate("/login");
+      toast.success(response.data?.message || "Password reset successfully!");
+
+      navigate("/login");
+    } catch (err) {
+      console.error("Reset password error:", err);
+
+      const errorMessage =
+        err.response?.data?.message ||
+        "Unable to reset your password. Please try again.";
+
+      setError(errorMessage);
+      toast.error(errorMessage);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -60,47 +75,28 @@ const ResetPassword = () => {
       {/* <Header /> */}
 
       <main className="reset-password-page">
-
         <section className="reset-password-card">
-
-          <Link
-            to="/login"
-            className="reset-back-link"
-          >
+          <Link to="/login" className="reset-back-link">
             ← Back to Login
           </Link>
 
-          <div className="reset-icon">
-            🔑
-          </div>
+          <div className="reset-icon">🔑</div>
 
           <div className="reset-heading">
-
-            <h1>
-              Reset Password
-            </h1>
+            <h1>Reset Password</h1>
 
             <p>
-              Create a new password for your
-              Campus Digital Marketplace account.
+              Create a new password for your Campus Digital Marketplace account.
             </p>
 
-            <span>
-              {email}
-            </span>
-
+            <span>{email}</span>
           </div>
 
-
           <form onSubmit={handleSubmit}>
-
             {/* PASSWORD */}
 
             <div className="reset-form-group">
-
-              <label>
-                New Password
-              </label>
+              <label>New Password</label>
 
               <input
                 type="password"
@@ -108,23 +104,17 @@ const ResetPassword = () => {
                 value={formData.password}
                 onChange={handleChange}
                 placeholder="Enter new password"
+                disabled={loading}
                 required
               />
 
-              <small>
-                Password must be at least 8 characters.
-              </small>
-
+              <small>Password must be at least 8 characters.</small>
             </div>
-
 
             {/* CONFIRM PASSWORD */}
 
             <div className="reset-form-group">
-
-              <label>
-                Confirm New Password
-              </label>
+              <label>Confirm New Password</label>
 
               <input
                 type="password"
@@ -132,43 +122,30 @@ const ResetPassword = () => {
                 value={formData.confirmPassword}
                 onChange={handleChange}
                 placeholder="Confirm your new password"
+                disabled={loading}
                 required
               />
-
             </div>
-
 
             {/* ERROR */}
 
-            {error && (
-              <p className="reset-error">
-                {error}
-              </p>
-            )}
-
+            {error && <p className="reset-error">{error}</p>}
 
             {/* SUBMIT */}
 
             <button
               type="submit"
               className="reset-password-btn"
+              disabled={loading}
             >
-              Reset Password
+              {loading ? "Resetting..." : "Reset Password"}
             </button>
-
           </form>
 
-
           <p className="reset-login-text">
-            Remember your password?{" "}
-
-            <Link to="/login">
-              Login
-            </Link>
+            Remember your password? <Link to="/login">Login</Link>
           </p>
-
         </section>
-
       </main>
 
       {/* <Footer /> */}

@@ -1,12 +1,96 @@
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import { useDispatch } from "react-redux";
+import { setUser, setToken } from "../../global/userSlice";
+import { apiClient } from "../../config/AxiosInstance";
 import "./Login.css";
 
 const Login = () => {
-const nav = useNavigate();
-const handleSubmit = (e) => {
-  e.preventDefault();
-  nav("/user/dashboard"); 
-};
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+  });
+
+  const [loading, setLoading] = useState(false);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    // Basic validation
+    if (!formData.email.trim()) {
+      toast.error("Please enter your email address.");
+      return;
+    }
+
+    if (!formData.password) {
+      toast.error("Please enter your password.");
+      return;
+    }
+
+    try {
+      setLoading(true);
+
+      const response = await apiClient.post("user/login", {
+        email: formData.email.trim(),
+        password: formData.password,
+      });
+
+      console.log("Login response:", response.data);
+
+      /*
+       * Store user information if returned by the backend.
+       *
+       * We will confirm the exact response structure from
+       * your backend response after testing.
+       */
+      const responseData = response.data;
+
+      const token =
+        responseData?.token ||
+        responseData?.accessToken ||
+        responseData?.data?.token ||
+        responseData?.data?.accessToken;
+
+      const user =
+        responseData?.user || responseData?.data?.user || responseData?.data;
+
+      if (user) {
+        dispatch(setUser(user));
+      }
+
+      if (token) {
+        dispatch(setToken(token));
+      }
+
+      toast.success(responseData?.message || "Login successful!");
+
+      // Go to user dashboard after successful login
+      navigate("/user/dashboard");
+    } catch (error) {
+      console.error("Login error:", error);
+
+      const errorMessage =
+        error.response?.data?.message ||
+        "Unable to login. Please check your credentials and try again.";
+
+      toast.error(errorMessage);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="auth-page">
@@ -54,7 +138,11 @@ const handleSubmit = (e) => {
 
                 <input
                   type="text"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
                   placeholder="Enter your email or matric number"
+                  disabled={loading}
                 />
               </div>
 
@@ -65,13 +153,19 @@ const handleSubmit = (e) => {
                   <Link to="/forgot-password">Forgot Password?</Link>
                 </div>
 
-                <input type="password" placeholder="Enter your password" />
+                <input
+                  type="password"
+                  name="password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  placeholder="Enter your password"
+                  disabled={loading}
+                />
               </div>
-              
-                <button type="submit" className="auth-button">
-                  Login
-                </button>
-             
+
+              <button type="submit" className="auth-button" disabled={loading}>
+                {loading ? "Logging in..." : "Login"}
+              </button>
             </form>
 
             <div className="auth-divider">
