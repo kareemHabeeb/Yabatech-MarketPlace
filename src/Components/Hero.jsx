@@ -1,9 +1,13 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import "./Hero.css";
-
+import { apiClient } from "../config/AxiosInstance";
 
 const Hero = () => {
+  const [products, setProducts] = useState([]);
+  const [loadingProducts, setLoadingProducts] = useState(true);
+  const [productError, setProductError] = useState("");
+
   const categories = [
     {
       icon: "👕",
@@ -37,45 +41,37 @@ const Hero = () => {
     },
   ];
 
-  const products = [
-    {
-      id: 1,
-      name: "Engineering Mathematics Textbook",
-      price: "₦5,000",
-      category: "Books",
-      image:
-        "https://images.unsplash.com/photo-1544947950-fa07a98d237f",
-    },
-    {
-      id: 2,
-      name: "Wireless Bluetooth Headphones",
-      price: "₦12,000",
-      category: "Electronics",
-      image:
-        "https://images.unsplash.com/photo-1505740420928-5e560c06d30e",
-    },
-    {
-      id: 3,
-      name: "Vintage Denim Jacket",
-      price: "₦8,500",
-      category: "Fashion",
-      image:
-        "https://images.unsplash.com/photo-1551028719-00167b16eac5",
-    },
-    {
-      id: 4,
-      name: "Student Study Table",
-      price: "₦15,000",
-      category: "Furniture",
-      image:
-        "https://images.unsplash.com/photo-1494438639946-1ebd1d20bf85",
-    },
-  ];
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        setLoadingProducts(true);
+        setProductError("");
+
+        const response = await apiClient.get("/product/market-place");
+
+        console.log("Marketplace response:", response.data);
+
+        const allProducts = response.data.requiredProducts || [];
+
+        // Only show the first 4 products on the Home page
+        setProducts(allProducts.slice(0, 4));
+      } catch (error) {
+        console.error("Error fetching marketplace products:", error);
+
+        setProductError(
+          error?.response?.data?.message || "Unable to load featured products.",
+        );
+      } finally {
+        setLoadingProducts(false);
+      }
+    };
+
+    fetchProducts();
+  }, []);
 
   return (
     <>
       <main className="home">
-
         {/* ================= HERO ================= */}
 
         <section className="hero-section">
@@ -89,8 +85,7 @@ const Hero = () => {
 
             <p className="hero-description">
               Campus Digital Marketplace makes it easier for YABATECH students
-              to buy and sell products and services within the campus
-              community.
+              to buy and sell products and services within the campus community.
             </p>
 
             <div className="hero-buttons">
@@ -140,9 +135,7 @@ const Hero = () => {
                 placeholder="Search for products or services..."
               />
 
-              <button>
-                Search
-              </button>
+              <button>Search</button>
             </div>
           </div>
         </section>
@@ -153,6 +146,7 @@ const Hero = () => {
           <div className="section-header">
             <div>
               <p className="section-tag">EXPLORE</p>
+
               <h2>Popular Categories</h2>
             </div>
 
@@ -162,9 +156,7 @@ const Hero = () => {
           <div className="category-grid">
             {categories.map((category, index) => (
               <div className="category-card" key={index}>
-                <div className="category-icon">
-                  {category.icon}
-                </div>
+                <div className="category-icon">{category.icon}</div>
 
                 <h3>{category.name}</h3>
 
@@ -180,45 +172,67 @@ const Hero = () => {
           <div className="section-header">
             <div>
               <p className="section-tag">MARKETPLACE</p>
+
               <h2>Featured Products</h2>
             </div>
 
-            <Link to="/marketplace">
-              View Marketplace →
-            </Link>
+            <Link to="/marketplace">View Marketplace →</Link>
           </div>
 
-          <div className="product-grid">
-            {products.map((product) => (
-              <article className="product-card" key={product.id}>
-                <div className="product-image">
-                  <img
-                    src={product.image}
-                    alt={product.name}
-                  />
+          {/* LOADING */}
 
-                  <span className="product-category">
-                    {product.category}
-                  </span>
-                </div>
+          {loadingProducts && (
+            <div className="products-message">
+              <p>Loading products...</p>
+            </div>
+          )}
 
-                <div className="product-info">
-                  <h3>{product.name}</h3>
+          {/* ERROR */}
 
-                  <p className="product-price">
-                    {product.price}
-                  </p>
+          {!loadingProducts && productError && (
+            <div className="products-message">
+              <p>{productError}</p>
+            </div>
+          )}
 
-                  <Link
-                    to={`/product/${product.id}`}
-                    className="view-product"
-                  >
-                    View Product →
-                  </Link>
-                </div>
-              </article>
-            ))}
-          </div>
+          {/* NO PRODUCTS */}
+
+          {!loadingProducts && !productError && products.length === 0 && (
+            <div className="products-message">
+              <p>No products available at the moment.</p>
+            </div>
+          )}
+
+          {/* PRODUCTS */}
+
+          {!loadingProducts && !productError && products.length > 0 && (
+            <div className="product-grid">
+              {products.map((product) => (
+                <article className="product-card" key={product.id}>
+                  <div className="product-image">
+                    <img src={product.image} alt={product.productName} />
+
+                    <span className="product-category">{product.category}</span>
+                  </div>
+
+                  <div className="product-info">
+                    <h3>{product.productName}</h3>
+
+                    <p className="product-price">
+                      ₦{product.price?.toLocaleString()}
+                    </p>
+
+                    <Link
+                      to={`/product/${product.id}`}
+                      className="view-product"
+                    >
+                      View Product →
+                    </Link>
+                  </div>
+                </article>
+              ))}
+            </div>
+          )}
         </section>
 
         {/* ================= HOW IT WORKS ================= */}
@@ -227,9 +241,7 @@ const Hero = () => {
           <div className="how-intro">
             <p className="section-tag">SIMPLE PROCESS</p>
 
-            <h2>
-              How Campus Digital Marketplace Works
-            </h2>
+            <h2>How Campus Digital Marketplace Works</h2>
 
             <p>
               Buying and selling within the YABATECH community has never been
@@ -238,7 +250,6 @@ const Hero = () => {
           </div>
 
           <div className="steps-container">
-
             <div className="step-card">
               <div className="step-number">01</div>
 
@@ -271,7 +282,6 @@ const Hero = () => {
                 transaction conveniently.
               </p>
             </div>
-
           </div>
         </section>
 
@@ -279,13 +289,9 @@ const Hero = () => {
 
         <section className="cta-section">
           <div className="cta-content">
-            <p className="section-tag light-tag">
-              JOIN THE COMMUNITY
-            </p>
+            <p className="section-tag light-tag">JOIN THE COMMUNITY</p>
 
-            <h2>
-              Ready to Buy or Sell on Campus?
-            </h2>
+            <h2>Ready to Buy or Sell on Campus?</h2>
 
             <p>
               Join the Campus Digital Marketplace and connect with students
@@ -303,9 +309,7 @@ const Hero = () => {
             </div>
           </div>
         </section>
-
       </main>
-
     </>
   );
 };

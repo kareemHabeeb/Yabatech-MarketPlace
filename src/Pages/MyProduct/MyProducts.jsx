@@ -67,19 +67,22 @@ const MyProducts = () => {
     }
   };
 
-  const handleMarkAsSold = async (id) => {
+  const updateStatus = async (id, status) => {
     setActioningId(id);
     try {
-      const res = await apiClient.patch(`product/product-status/${id}`, {
-        status: "sold",
+      const res = await apiClient.put(`product/product-status/${id}`, {
+        status,
       });
 
       setProducts((prev) =>
         prev.map((product) =>
-          product.id === id ? { ...product, status: "sold" } : product,
+          product.id === id ? { ...product, status } : product,
         ),
       );
-      toast.success(res.data?.message || "Product marked as sold.");
+      toast.success(
+        res.data?.message ||
+          `Product marked as ${status === "sold" ? "sold" : "available"}.`,
+      );
     } catch (err) {
       console.error("Update status error:", err);
       toast.error(
@@ -90,6 +93,9 @@ const MyProducts = () => {
       setActioningId(null);
     }
   };
+
+  const handleMarkAsSold = (id) => updateStatus(id, "sold");
+  const handleMarkAsAvailable = (id) => updateStatus(id, "available");
 
   const isActive = (status) => status?.toLowerCase() === "available";
   const isSold = (status) => status?.toLowerCase() === "sold";
@@ -208,7 +214,7 @@ const MyProducts = () => {
                         Edit
                       </Link>
 
-                      {isActive(product.status) && (
+                      {isActive(product.status) ? (
                         <button
                           className="sold-btn"
                           onClick={() => handleMarkAsSold(product.id)}
@@ -217,6 +223,16 @@ const MyProducts = () => {
                           {actioningId === product.id
                             ? "Updating..."
                             : "Mark Sold"}
+                        </button>
+                      ) : (
+                        <button
+                          className="sold-btn"
+                          onClick={() => handleMarkAsAvailable(product.id)}
+                          disabled={actioningId === product.id}
+                        >
+                          {actioningId === product.id
+                            ? "Updating..."
+                            : "Mark Available"}
                         </button>
                       )}
 

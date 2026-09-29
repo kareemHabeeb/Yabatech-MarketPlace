@@ -58,13 +58,13 @@ const Header = () => {
           </NavLink>
 
           <NavLink
-            to="/categories"
+            to="/aboutUs"
             className={({ isActive }) =>
               isActive ? "nav-route active" : "nav-route"
             }
             onClick={closeMenu}
           >
-            Categories
+            About Us
           </NavLink>
 
           {/* Mobile auth buttons (inside nav) */}

@@ -6,7 +6,6 @@ import "react-toastify/dist/ReactToastify.css";
 import Login from "./Pages/Auth/Login";
 import Register from "./Pages/Auth/Register";
 import Marketplace from "./Pages/Market/Marketplace";
-import Categories from "./Pages/Categories/Categories";
 import Details from "./Pages/Details/Details";
 import SellProduct from "./Pages/SellProducts/SellProducts";
 import Dashboard from "./Pages/Dashboard/Dashboard";
@@ -19,6 +18,8 @@ import Profile from "./Pages/Profile/Profile";
 import ForgotPassword from "./Pages/Auth/ForgetPassword";
 import VerifyOTP from "./Pages/Auth/VerifyOtp";
 import ResetPassword from "./Pages/Auth/ResetPassword";
+import About from "./Pages/About/About";
+
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -39,7 +40,7 @@ const App = () => {
         <Route path="/marketplace" element={<Marketplace />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-        <Route path="/categories" element={<Categories />} />
+        <Route path="/aboutUs" element={<About />} />
         <Route path="/product/:id" element={<ViewProducts />} />
         <Route path="/sell" element={<SellProduct />} />
         <Route path="/user/dashboard" element={<Dashboard />} />

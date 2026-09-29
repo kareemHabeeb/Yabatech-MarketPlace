@@ -1,105 +1,80 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import Footer from "../../Components/Footer";
-import "./ViewProducts.css";
 import Header from "../../Components/Header";
+import { apiClient } from "../../config/AxiosInstance";
+import "./ViewProducts.css";
 
 const ViewProducts = () => {
   const { id } = useParams();
 
-  // Temporary mock data
-  // Later this will come from your API using the product ID
+  const [product, setProduct] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
-  const products = [
-    {
-      id: 1,
-      name: "HP EliteBook Laptop",
-      category: "Electronics",
-      price: 250000,
-      condition: "Used - Like New",
-      description:
-        "A clean HP EliteBook laptop in excellent condition. It is suitable for programming, school work, assignments, and general use. The laptop is working perfectly and has been properly maintained.",
-      seller: "John Doe",
-      department: "Computer Science",
-      contact: "08012345678",
-      image:
-        "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?auto=format&fit=crop&w=900&q=80",
-    },
+  useEffect(() => {
+    const fetchProduct = async () => {
+      try {
+        setLoading(true);
+        setError("");
 
-    {
-      id: 2,
-      name: "Engineering Mathematics Textbook",
-      category: "Books & Academic Materials",
-      price: 5000,
-      condition: "Used - Good Condition",
-      description:
-        "A well-maintained Engineering Mathematics textbook suitable for students. The book is clean and all pages are complete.",
-      seller: "Mary James",
-      department: "Mechanical Engineering",
-      contact: "08098765432",
-      image:
-        "https://images.unsplash.com/photo-1544947950-fa07a98d237f?auto=format&fit=crop&w=900&q=80",
-    },
+        const response = await apiClient.get(`/product/market-place/${id}`);
 
-    {
-      id: 3,
-      name: "Wireless Headphones",
-      category: "Electronics",
-      price: 12000,
-      condition: "Used - Like New",
-      description:
-        "Wireless Bluetooth headphones with good sound quality and long battery life. Everything is working properly.",
-      seller: "David Smith",
-      department: "Electrical Engineering",
-      contact: "08045678901",
-      image:
-        "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=900&q=80",
-    },
+        console.log("Product response:", response.data);
 
-    {
-      id: 4,
-      name: "Vintage Denim Jacket",
-      category: "Fashion",
-      price: 15000,
-      condition: "Used - Good Condition",
-      description:
-        "A stylish vintage denim jacket in good condition. Perfect for casual wear and suitable for students.",
-      seller: "Sarah Williams",
-      department: "Business Administration",
-      contact: "08076543210",
-      image:
-        "https://images.unsplash.com/photo-1529139574466-a303027c1d8b?auto=format&fit=crop&w=900&q=80",
-    },
-  ];
+        setProduct(response.data.data);
+      } catch (error) {
+        console.error("Error fetching product:", error);
 
-  // Convert route ID to number
-  const product = products.find(
-    (item) => item.id === Number(id)
-  );
+        setError(
+          error?.response?.data?.message || "Unable to load this product.",
+        );
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  // If product is not found
-  if (!product) {
+    if (id) {
+      fetchProduct();
+    }
+  }, [id]);
+
+  // Loading state
+  if (loading) {
     return (
       <>
         <Header />
 
         <main className="product-not-found">
-
           <div>
+            <h1>Loading Product...</h1>
 
+            <p>Please wait while we fetch the product details.</p>
+          </div>
+        </main>
+
+        <Footer />
+      </>
+    );
+  }
+
+  // Error / product not found
+  if (error || !product) {
+    return (
+      <>
+        <Header />
+
+        <main className="product-not-found">
+          <div>
             <h1>Product Not Found</h1>
 
             <p>
-              The product you are looking for does not exist or may have been
-              removed.
+              {error ||
+                "The product you are looking for does not exist or may have been removed."}
             </p>
 
-            <Link to="/marketplace">
-              Back to Marketplace
-            </Link>
-
+            <Link to="/marketplace">Back to Marketplace</Link>
           </div>
-
         </main>
 
         <Footer />
@@ -108,10 +83,16 @@ const ViewProducts = () => {
   }
 
   const handleContactSeller = () => {
-    // Temporary behaviour
-    // Later you can connect this to a chat system
+    if (!product.user?.phoneNumber) {
+      alert("Seller phone number is not available.");
+      return;
+    }
 
-    window.location.href = `https://wa.me/234${product.contact.substring(1)}`;
+    const phoneNumber = product.user.phoneNumber
+      .replace(/\s/g, "")
+      .replace("+", "");
+
+    window.open(`https://wa.me/${phoneNumber}`, "_blank");
   };
 
   return (
@@ -119,119 +100,81 @@ const ViewProducts = () => {
       <Header />
 
       <main className="product-details-page">
-
         {/* BREADCRUMB */}
 
         <section className="product-breadcrumb">
-
-          <Link to="/">
-            Home
-          </Link>
+          <Link to="/">Home</Link>
 
           <span>/</span>
 
-          <Link to="/marketplace">
-            Marketplace
-          </Link>
+          <Link to="/marketplace">Marketplace</Link>
 
           <span>/</span>
 
-          <p>
-            {product.name}
-          </p>
-
+          <p>{product.productName}</p>
         </section>
-
 
         {/* PRODUCT DETAILS */}
 
         <section className="product-details-container">
-
           {/* PRODUCT IMAGE */}
 
           <div className="product-gallery">
-
             <div className="main-product-image">
-
-              <img
-                src={product.image}
-                alt={product.name}
-              />
-
+              <img src={product.image} alt={product.productName} />
             </div>
-
           </div>
-
 
           {/* PRODUCT INFORMATION */}
 
           <div className="product-details-info">
+            <p className="details-category">{product.category}</p>
 
-            <p className="details-category">
-              {product.category}
-            </p>
+            <h1>{product.productName}</h1>
 
-            <h1>
-              {product.name}
-            </h1>
+            <h2>₦{product.price?.toLocaleString()}</h2>
 
-            <h2>
-              ₦{product.price.toLocaleString()}
-            </h2>
-
+            {/* CONDITION */}
 
             <div className="product-condition">
+              <span>Condition</span>
 
-              <span>
-                Condition
-              </span>
-
-              <strong>
-                {product.condition}
-              </strong>
-
+              <strong>{product.condition}</strong>
             </div>
 
+            {/* STATUS */}
+
+            <div className="product-condition">
+              <span>Status</span>
+
+              <strong>{product.status}</strong>
+            </div>
+
+            {/* DESCRIPTION */}
 
             <div className="product-description">
+              <h3>Product Description</h3>
 
-              <h3>
-                Product Description
-              </h3>
-
-              <p>
-                {product.description}
-              </p>
-
+              <p>{product.description}</p>
             </div>
-
 
             {/* SELLER INFORMATION */}
 
             <div className="seller-card">
-
               <div className="seller-avatar">
-                {product.seller.charAt(0)}
+                {product.user?.firstName?.charAt(0).toUpperCase()}
               </div>
 
               <div className="seller-info">
-
-                <p className="seller-label">
-                  SOLD BY
-                </p>
+                <p className="seller-label">SOLD BY</p>
 
                 <h3>
-                  {product.seller}
+                  {product.user?.firstName} {product.user?.lastName}
                 </h3>
 
-                <p>
-                  {product.department}
-                </p>
-
+                <p>{product.user?.department}</p>
               </div>
-
             </div>
-
 
             {/* CONTACT BUTTON */}
 
@@ -242,30 +185,19 @@ const ViewProducts = () => {
               Contact Seller
             </button>
 
-
             <p className="contact-note">
-              Contact the seller directly to ask questions or arrange a
-              meeting.
+              Contact the seller directly to ask questions or arrange a meeting.
             </p>
-
           </div>
-
         </section>
-
 
         {/* BACK BUTTON */}
 
         <section className="back-marketplace-section">
-
-          <Link
-            to="/marketplace"
-            className="back-marketplace-btn"
-          >
+          <Link to="/marketplace" className="back-marketplace-btn">
             ← Back to Marketplace
           </Link>
-
         </section>
-
       </main>
 
       <Footer />
