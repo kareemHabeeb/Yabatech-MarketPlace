@@ -15,9 +15,9 @@ const About = () => {
         "Part of the team behind the idea and development of Campus Digital Marketplace.",
     },
     {
-      name: "Chris Ella",
+      name: "Femi-Ologbe Moyinoluwa",
       role: "Computer Science Student",
-      image: "/src/assets/team/chris.jpg",
+      image: "https://i.postimg.cc/brsyFwdh/Whats-App-Image-2026-09-29-at-20-02-11.jpg",
       description:
         "A member of the development team helping to turn the marketplace idea into a functional digital platform.",
     },

@@ -1,85 +1,70 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
+import { toast } from "react-toastify";
 import Footer from "../../Components/Footer";
 import "./EditProduct.css";
 import DashboardHeader from "../../Components/DashboardHeader";
+import { apiClient } from "../../config/AxiosInstance";
 
 const EditProduct = () => {
   const { id } = useParams();
   const navigate = useNavigate();
 
-  // Temporary mock data
-  // Later, this will come from your backend/API
-
-  const products = [
-    {
-      id: 1,
-      name: "HP EliteBook Laptop",
-      category: "Electronics",
-      price: 250000,
-      condition: "Used - Like New",
-      description:
-        "A clean HP EliteBook laptop in excellent condition. It is suitable for programming, school work, assignments, and general use.",
-      image:
-        "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?auto=format&fit=crop&w=900&q=80",
-    },
-
-    {
-      id: 2,
-      name: "Engineering Mathematics Textbook",
-      category: "Books & Academic Materials",
-      price: 5000,
-      condition: "Used - Good Condition",
-      description:
-        "A well-maintained Engineering Mathematics textbook suitable for students.",
-      image:
-        "https://images.unsplash.com/photo-1544947950-fa07a98d237f?auto=format&fit=crop&w=900&q=80",
-    },
-
-    {
-      id: 3,
-      name: "Wireless Headphones",
-      category: "Electronics",
-      price: 12000,
-      condition: "Used - Like New",
-      description:
-        "Wireless Bluetooth headphones with good sound quality and long battery life.",
-      image:
-        "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=900&q=80",
-    },
-
-    {
-      id: 4,
-      name: "Vintage Denim Jacket",
-      category: "Fashion",
-      price: 15000,
-      condition: "Used - Good Condition",
-      description:
-        "A stylish vintage denim jacket in good condition.",
-      image:
-        "https://images.unsplash.com/photo-1529139574466-a303027c1d8b?auto=format&fit=crop&w=900&q=80",
-    },
-  ];
-
-  // Find the product using the ID from the URL
-
-  const product = products.find(
-    (item) => item.id === Number(id)
-  );
-
-  // Form state
-
   const [formData, setFormData] = useState({
-    name: product?.name || "",
-    category: product?.category || "",
-    price: product?.price || "",
-    condition: product?.condition || "",
-    description: product?.description || "",
-    image: product?.image || "",
+    name: "",
+    category: "",
+    price: "",
+    condition: "",
+    description: "",
+    phoneNumber: "",
+    status: "",
   });
 
+  const [existingImage, setExistingImage] = useState(""); // current image URL from server
+  const [newImage, setNewImage] = useState(null); // File, if user picks a replacement
+  const [loading, setLoading] = useState(true);
+  const [notFound, setNotFound] = useState(false);
+  const [saving, setSaving] = useState(false);
 
-  // Handle input changes
+  useEffect(() => {
+    fetchProduct();
+  }, [id]);
+
+  const fetchProduct = async () => {
+    setLoading(true);
+    setNotFound(false);
+    try {
+      const res = await apiClient.get(`product/product/${id}`);
+      const raw = res.data?.data ?? res.data?.product ?? res.data;
+
+      if (!raw || (!raw.productName && !raw._id && !raw.id)) {
+        setNotFound(true);
+        return;
+      }
+
+      setFormData({
+        name: raw.productName ?? "",
+        category: raw.category ?? "",
+        price: raw.price ?? "",
+        condition: raw.condition ?? "",
+        description: raw.description ?? "",
+        phoneNumber: raw.phoneNumber ?? "",
+        status: raw.status ?? "available",
+      });
+      setExistingImage(raw.image ?? "");
+    } catch (err) {
+      console.error("Fetch product error:", err);
+      if (err.response?.status === 404) {
+        setNotFound(true);
+      } else {
+        toast.error(
+          err.response?.data?.message || "Could not load this product.",
+        );
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -90,43 +75,82 @@ const EditProduct = () => {
     });
   };
 
-
-  // Handle update
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-
-    // Later, this is where your API request will go
-    // PUT /api/products/:id
-
-    console.log("Updated Product:", formData);
-
-    alert("Product updated successfully!");
-
-    // Return to the Manage Product page
-
-    navigate(`/my-products/${id}`);
+  const handleImageChange = (e) => {
+    const file = e.target.files?.[0];
+    if (file) setNewImage(file);
   };
 
+  // Since the backend requires "image" as binary on every update, if the
+  // user didn't pick a new file we re-download the current image from its
+  // URL and turn it back into a File so we always have something binary
+  // to send.
+  const resolveImageFile = async () => {
+    if (newImage) return newImage;
 
-  // Product not found
+    if (!existingImage) return null;
 
-  if (!product) {
+    const response = await fetch(existingImage);
+    const blob = await response.blob();
+    const filename = existingImage.split("/").pop() || "product-image.jpg";
+    return new File([blob], filename, { type: blob.type || "image/jpeg" });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      setSaving(true);
+
+      const imageFile = await resolveImageFile();
+
+      if (!imageFile) {
+        toast.error("Please add a product image.");
+        setSaving(false);
+        return;
+      }
+
+      const payload = new FormData();
+      payload.append("productName", formData.name);
+      payload.append("category", formData.category);
+      payload.append("condition", formData.condition);
+      payload.append("price", formData.price);
+      payload.append("description", formData.description);
+      payload.append("phoneNumber", formData.phoneNumber);
+      payload.append("status", formData.status);
+      payload.append("image", imageFile);
+
+      const response = await apiClient.put(`product/product/${id}`, payload, {
+        headers: {
+          "Content-Type": undefined,
+        },
+      });
+
+      console.log("Product updated:", response.data);
+
+      toast.success(response.data?.message || "Product updated successfully!");
+
+      navigate(`/View-products/${id}`);
+    } catch (err) {
+      console.error("Update product error:", err);
+      toast.error(
+        err.response?.data?.message ||
+          "Unable to update this product. Please try again.",
+      );
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  // LOADING STATE
+
+  if (loading) {
     return (
       <>
         <DashboardHeader />
 
         <main className="edit-not-found">
           <div>
-            <h1>Product Not Found</h1>
-
-            <p>
-              The product you are trying to edit does not exist.
-            </p>
-
-            <Link to="/my-products">
-              ← Back to My Products
-            </Link>
+            <h1>Loading product...</h1>
           </div>
         </main>
 
@@ -135,71 +159,67 @@ const EditProduct = () => {
     );
   }
 
+  // PRODUCT NOT FOUND
+
+  if (notFound) {
+    return (
+      <>
+        <DashboardHeader />
+
+        <main className="edit-not-found">
+          <div>
+            <h1>Product Not Found</h1>
+
+            <p>The product you are trying to edit does not exist.</p>
+
+            <Link to="/my-products">← Back to My Products</Link>
+          </div>
+        </main>
+
+        <Footer />
+      </>
+    );
+  }
 
   return (
     <>
       <DashboardHeader />
 
       <main className="edit-product-page">
-
         {/* BREADCRUMB */}
 
         <section className="edit-breadcrumb">
-
-          <Link to="/dashboard">
-            Dashboard
-          </Link>
+          <Link to="/dashboard">Dashboard</Link>
 
           <span>/</span>
 
-          <Link to="/my-products">
-            My Products
-          </Link>
+          <Link to="/my-products">My Products</Link>
 
           <span>/</span>
 
-          <Link to={`/my-products/${id}`}>
-            Manage Product
-          </Link>
+          <Link to={`/View-products/${id}`}>Manage Product</Link>
 
           <span>/</span>
 
-          <p>
-            Edit Product
-          </p>
-
+          <p>Edit Product</p>
         </section>
-
 
         {/* PAGE HEADING */}
 
         <section className="edit-heading">
+          <h1>Edit Product</h1>
 
-          <h1>
-            Edit Product
-          </h1>
-
-          <p>
-            Update the details of your product.
-          </p>
-
+          <p>Update the details of your product.</p>
         </section>
-
 
         {/* FORM */}
 
         <section className="edit-form-container">
-
           <form onSubmit={handleSubmit} className="edit-product-form">
-
-
             {/* PRODUCT NAME */}
 
             <div className="edit-form-group">
-
-              <label>
-                Product Name
-              </label>
+              <label>Product Name</label>
 
               <input
                 type="text"
@@ -207,67 +227,45 @@ const EditProduct = () => {
                 value={formData.name}
                 onChange={handleChange}
                 placeholder="Enter product name"
+                disabled={saving}
                 required
               />
-
             </div>
-
 
             {/* CATEGORY */}
 
             <div className="edit-form-group">
-
-              <label>
-                Category
-              </label>
+              <label>Category</label>
 
               <select
                 name="category"
                 value={formData.category}
                 onChange={handleChange}
+                disabled={saving}
                 required
               >
+                <option value="">Select Category</option>
 
-                <option value="">
-                  Select Category
-                </option>
+                <option value="Electronics">Electronics</option>
 
-                <option value="Electronics">
-                  Electronics
-                </option>
-
-                <option value="Fashion">
-                  Fashion
-                </option>
+                <option value="Fashion">Fashion</option>
 
                 <option value="Books & Academic Materials">
                   Books & Academic Materials
                 </option>
 
-                <option value="Food & Snacks">
-                  Food & Snacks
-                </option>
+                <option value="Food & Snacks">Food & Snacks</option>
 
-                <option value="Services">
-                  Services
-                </option>
+                <option value="Services">Services</option>
 
-                <option value="Other">
-                  Other
-                </option>
-
+                <option value="Other">Other</option>
               </select>
-
             </div>
-
 
             {/* PRICE */}
 
             <div className="edit-form-group">
-
-              <label>
-                Price (₦)
-              </label>
+              <label>Price (₦)</label>
 
               <input
                 type="number"
@@ -275,91 +273,96 @@ const EditProduct = () => {
                 value={formData.price}
                 onChange={handleChange}
                 placeholder="Enter product price"
+                disabled={saving}
                 required
               />
-
             </div>
-
 
             {/* CONDITION */}
 
             <div className="edit-form-group">
-
-              <label>
-                Condition
-              </label>
+              <label>Condition</label>
 
               <select
                 name="condition"
                 value={formData.condition}
                 onChange={handleChange}
+                disabled={saving}
                 required
               >
+                <option value="">Select Condition</option>
 
-                <option value="">
-                  Select Condition
-                </option>
+                <option value="nnew">New</option>
 
-                <option value="Brand New">
-                  Brand New
-                </option>
-
-                <option value="Used - Like New">
-                  Used - Like New
-                </option>
-
-                <option value="Used - Good Condition">
-                  Used - Good Condition
-                </option>
-
-                <option value="Used - Fair Condition">
-                  Used - Fair Condition
-                </option>
-
+                <option value="used">Used</option>
               </select>
-
             </div>
 
+            {/* PHONE NUMBER */}
+
+            <div className="edit-form-group">
+              <label>Phone Number / WhatsApp Number</label>
+
+              <input
+                type="tel"
+                name="phoneNumber"
+                value={formData.phoneNumber}
+                onChange={handleChange}
+                placeholder="e.g. 08012345678"
+                disabled={saving}
+                required
+              />
+            </div>
+
+            {/* STATUS */}
+
+            <div className="edit-form-group">
+              <label>Status</label>
+
+              <select
+                name="status"
+                value={formData.status}
+                onChange={handleChange}
+                disabled={saving}
+                required
+              >
+                <option value="available">Available</option>
+
+                <option value="sold">Sold</option>
+              </select>
+            </div>
 
             {/* PRODUCT IMAGE */}
 
             <div className="edit-form-group edit-full-width">
-
-              <label>
-                Product Image
-              </label>
+              <label>Product Image</label>
 
               <input
-                type="url"
-                name="image"
-                value={formData.image}
-                onChange={handleChange}
-                placeholder="Enter image URL"
+                type="file"
+                accept="image/*"
+                onChange={handleImageChange}
+                disabled={saving}
               />
 
-              {formData.image && (
+              <div className="edit-image-preview">
+                <img
+                  src={newImage ? URL.createObjectURL(newImage) : existingImage}
+                  alt="Product preview"
+                />
+              </div>
 
-                <div className="edit-image-preview">
-
-                  <img
-                    src={formData.image}
-                    alt="Product preview"
-                  />
-
-                </div>
-
+              {!newImage && (
+                <small>
+                  Leave empty to keep the current image — it will be resent
+                  automatically.
+                </small>
               )}
-
             </div>
-
 
             {/* DESCRIPTION */}
 
             <div className="edit-form-group edit-full-width">
-
-              <label>
-                Product Description
-              </label>
+              <label>Product Description</label>
 
               <textarea
                 name="description"
@@ -367,36 +370,28 @@ const EditProduct = () => {
                 onChange={handleChange}
                 placeholder="Describe your product"
                 rows="6"
+                disabled={saving}
                 required
               />
-
             </div>
-
 
             {/* ACTION BUTTONS */}
 
             <div className="edit-form-actions">
-
-              <Link
-                to={`/View-products/${id}`}
-                className="cancel-edit-btn"
-              >
+              <Link to={`/View-products/${id}`} className="cancel-edit-btn">
                 Cancel
               </Link>
 
               <button
                 type="submit"
                 className="update-product-btn"
+                disabled={saving}
               >
-                Update Product
+                {saving ? "Updating..." : "Update Product"}
               </button>
-
             </div>
-
           </form>
-
         </section>
-
       </main>
 
       <Footer />

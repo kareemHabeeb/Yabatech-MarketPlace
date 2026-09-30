@@ -19,7 +19,7 @@ import ForgotPassword from "./Pages/Auth/ForgetPassword";
 import VerifyOTP from "./Pages/Auth/VerifyOtp";
 import ResetPassword from "./Pages/Auth/ResetPassword";
 import About from "./Pages/About/About";
-
+import ProtectedRoute from "./global/ProtectedRoute";
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -36,21 +36,66 @@ const App = () => {
     <BrowserRouter>
       <ScrollToTop />
       <Routes>
+        {/* PUBLIC ROUTES */}
         <Route path="/" element={<Home />} />
         <Route path="/marketplace" element={<Marketplace />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/aboutUs" element={<About />} />
         <Route path="/product/:id" element={<ViewProducts />} />
-        <Route path="/sell" element={<SellProduct />} />
-        <Route path="/user/dashboard" element={<Dashboard />} />
-        <Route path="/my-products" element={<MyProducts />} />
-        <Route path="/View-products/:id" element={<ManageProduct />} />
-        <Route path="/edit-product/:id" element={<EditProduct />} />
-        <Route path="/profile" element={<Profile />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/verifyOTP" element={<VerifyOTP />} />
         <Route path="/resetPassword" element={<ResetPassword />} />
+
+        {/* PROTECTED ROUTES — require a logged-in user */}
+        <Route
+          path="/sell"
+          element={
+            <ProtectedRoute>
+              <SellProduct />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/user/dashboard"
+          element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/my-products"
+          element={
+            <ProtectedRoute>
+              <MyProducts />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/View-products/:id"
+          element={
+            <ProtectedRoute>
+              <ManageProduct />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/edit-product/:id"
+          element={
+            <ProtectedRoute>
+              <EditProduct />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/profile"
+          element={
+            <ProtectedRoute>
+              <Profile />
+            </ProtectedRoute>
+          }
+        />
 
         <Route path="*" element={<NotFoundPage />} />
       </Routes>

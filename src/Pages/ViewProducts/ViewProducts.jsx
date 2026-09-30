@@ -83,12 +83,12 @@ const ViewProducts = () => {
   }
 
   const handleContactSeller = () => {
-    if (!product.user?.phoneNumber) {
+    if (!product?.phoneNumber) {
       alert("Seller phone number is not available.");
       return;
     }
 
-    const phoneNumber = product.user.phoneNumber
+    const phoneNumber = product.phoneNumber
       .replace(/\s/g, "")
       .replace("+", "");
 
