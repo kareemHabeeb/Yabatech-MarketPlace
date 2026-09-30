@@ -84,13 +84,18 @@ const ViewProducts = () => {
 
   const handleContactSeller = () => {
     if (!product?.phoneNumber) {
-      alert("Seller phone number is not available.");
+      toast.error("Seller phone number is not available.");
       return;
     }
 
-    const phoneNumber = product.phoneNumber
-      .replace(/\s/g, "")
-      .replace("+", "");
+    let phoneNumber = product.phoneNumber.replace(/\s/g, "").replace(/-/g, "");
+
+    if (phoneNumber.startsWith("+")) {
+      phoneNumber = phoneNumber.slice(1);
+    } else if (phoneNumber.startsWith("0")) {
+      // Local Nigerian format (e.g. 08012345678) → convert to +234...
+      phoneNumber = "234" + phoneNumber.slice(1);
+    }
 
     window.open(`https://wa.me/${phoneNumber}`, "_blank");
   };
